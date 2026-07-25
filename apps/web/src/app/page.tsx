@@ -1,5 +1,5 @@
 import type { InventoryScanEvent, SyncStatus } from "@indinv/core-domain";
-import { getWarehouseScanEvents } from "@/lib/api";
+import { BackendUnreachableError, getWarehouseScanEvents } from "@/lib/api";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
 import {
   Table,
@@ -22,11 +22,13 @@ const SYNC_STATUS_VARIANT: Record<SyncStatus, NonNullable<BadgeProps["variant"]>
 export default async function DashboardPage() {
   let events: InventoryScanEvent[];
   let error: string | null = null;
+  let isColdStart = false;
 
   try {
     events = await getWarehouseScanEvents(DEMO_TENANT_ID, DEMO_WAREHOUSE_ID);
   } catch (err) {
-    error = err instanceof Error ? err.message : "Unknown error";
+    error = err instanceof Error ? err.message : "Error desconocido";
+    isColdStart = err instanceof BackendUnreachableError && err.isLikelyColdStart;
     events = [];
   }
 
@@ -38,9 +40,17 @@ export default async function DashboardPage() {
       </div>
 
       {error && (
-        <div className="mb-6 rounded-md border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          No se pudo conectar al backend (
-          {process.env.INDINV_API_URL ?? "http://localhost:3001"}): {error}
+        <div
+          className={
+            isColdStart
+              ? "mb-6 rounded-md border border-amber-500/50 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-400"
+              : "mb-6 rounded-md border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+          }
+        >
+          <p className="font-medium">
+            {isColdStart ? "El backend se está despertando" : "No se pudo conectar al backend"}
+          </p>
+          <p className="mt-1">{error}</p>
         </div>
       )}
 
