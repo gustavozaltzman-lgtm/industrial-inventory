@@ -5,6 +5,14 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
     },
+    "@indinv/web#build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**"],
+      // Turborepo sanitiza el entorno para que los builds sean herméticos:
+      // toda variable que el build necesite tiene que declararse acá o no
+      // llega. Sin esto, Vercel avisa que INDINV_API_URL no estará disponible.
+      "env": ["INDINV_API_URL"]
+    },
     "dev": {
       "cache": false,
       "persistent": true
