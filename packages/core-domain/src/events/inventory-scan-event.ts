@@ -30,6 +30,7 @@ export interface NewStockReadInput {
   correlationId?: string;
   locationId?: EntityId;
   deviceId?: string;
+  sequenceNumber?: number;
   operatorId?: EntityId;
   imageRef?: string;
   metadata?: Record<string, unknown>;
@@ -47,6 +48,7 @@ export function createStockReadEvent(input: NewStockReadInput): InventoryScanEve
     quantity: input.quantity,
     captureSource: input.captureSource,
     deviceId: input.deviceId,
+    sequenceNumber: input.sequenceNumber,
     operatorId: input.operatorId,
     imageRef: input.imageRef,
     metadata: input.metadata,

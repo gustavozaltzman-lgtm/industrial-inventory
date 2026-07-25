@@ -15,6 +15,13 @@
       "when": 1785011856274,
       "tag": "0001_ambitious_donald_blake",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1785015567229,
+      "tag": "0002_handy_nehzno",
+      "breakpoints": true
     }
   ]
 }

@@ -31,6 +31,11 @@ export const syncStatusSchema = z.enum(["pending_sync", "synced", "sync_failed"]
 export type SyncStatus = z.infer<typeof syncStatusSchema>;
 
 export const inventoryScanEventSchema = z.object({
+  /**
+   * Generado en el dispositivo al momento del escaneo. Es la clave de
+   * idempotencia: el backend deduplica por (tenantId, id) en la ingesta por
+   * lote, de modo que reintentar un lote tras una caída de red no duplica.
+   */
   id: entityIdSchema,
   tenantId: tenantIdSchema,
   correlationId: correlationIdSchema,
@@ -41,6 +46,12 @@ export const inventoryScanEventSchema = z.object({
   quantity: z.number().finite(),
   captureSource: captureSourceSchema,
   deviceId: z.string().min(1).optional(),
+  /**
+   * Contador monotónico por dispositivo. No participa de la deduplicación
+   * (eso lo hace `id`), pero permite detectar huecos en la secuencia de un
+   * equipo — es decir, escaneos que nunca llegaron a sincronizarse.
+   */
+  sequenceNumber: z.number().int().nonnegative().optional(),
   operatorId: entityIdSchema.optional(),
   imageRef: z.string().min(1).optional(),
   metadata: z.record(z.string(), z.unknown()).optional(),

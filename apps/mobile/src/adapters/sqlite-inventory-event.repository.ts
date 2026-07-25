@@ -1,9 +1,23 @@
 import { and, eq, inArray } from "drizzle-orm";
-import type { InventoryEventRepository, InventoryScanEvent } from "@indinv/core-domain";
+import type {
+  InventoryEventRepository,
+  InventoryScanEvent,
+  SyncStatus,
+} from "@indinv/core-domain";
 import type { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
 import * as schema from "../db/schema.js";
 
 type LocalRow = typeof schema.inventoryScanEventsLocal.$inferSelect;
+export type LocalSyncStatus = LocalRow["syncStatus"];
+
+/**
+ * 'syncing' es un estado puramente local (lock optimista de subida). Hacia el
+ * dominio se reporta como 'pending_sync': mientras el backend no confirmó,
+ * el evento sigue pendiente.
+ */
+function toDomainSyncStatus(status: LocalSyncStatus): SyncStatus {
+  return status === "syncing" ? "pending_sync" : status;
+}
 
 function toDomainEvent(row: LocalRow): InventoryScanEvent {
   return {
@@ -17,12 +31,13 @@ function toDomainEvent(row: LocalRow): InventoryScanEvent {
     quantity: row.quantity,
     captureSource: row.captureSource as InventoryScanEvent["captureSource"],
     deviceId: row.deviceId ?? undefined,
+    sequenceNumber: row.sequenceNumber ?? undefined,
     operatorId: row.operatorId ?? undefined,
     imageRef: row.imageRef ?? undefined,
     metadata: row.metadataJson ? JSON.parse(row.metadataJson) : undefined,
     capturedAt: row.capturedAt,
     recordedAt: row.recordedAt ?? undefined,
-    syncStatus: row.syncStatus as InventoryScanEvent["syncStatus"],
+    syncStatus: toDomainSyncStatus(row.syncStatus),
     adjustsEventId: row.adjustsEventId ?? undefined,
   };
 }
@@ -39,6 +54,7 @@ function toRow(event: InventoryScanEvent): typeof schema.inventoryScanEventsLoca
     quantity: event.quantity,
     captureSource: event.captureSource,
     deviceId: event.deviceId ?? null,
+    sequenceNumber: event.sequenceNumber ?? null,
     operatorId: event.operatorId ?? null,
     imageRef: event.imageRef ?? null,
     metadataJson: event.metadata ? JSON.stringify(event.metadata) : null,
@@ -46,6 +62,7 @@ function toRow(event: InventoryScanEvent): typeof schema.inventoryScanEventsLoca
     recordedAt: event.recordedAt ?? null,
     syncStatus: event.syncStatus,
     adjustsEventId: event.adjustsEventId ?? null,
+    createdOfflineAt: new Date().toISOString(),
   };
 }
 
@@ -130,31 +147,5 @@ export class SqliteInventoryEventRepository implements InventoryEventRepository 
         ),
       );
     return rows.map(toDomainEvent);
-  }
-
-  async markSynced(id: string, recordedAt: string): Promise<void> {
-    await this.db
-      .update(schema.inventoryScanEventsLocal)
-      .set({ syncStatus: "synced", recordedAt })
-      .where(eq(schema.inventoryScanEventsLocal.id, id));
-  }
-
-  async markSyncFailed(id: string): Promise<void> {
-    await this.db
-      .update(schema.inventoryScanEventsLocal)
-      .set({
-        syncStatus: "sync_failed",
-        syncAttempts: (await this.getAttempts(id)) + 1,
-      })
-      .where(eq(schema.inventoryScanEventsLocal.id, id));
-  }
-
-  private async getAttempts(id: string): Promise<number> {
-    const rows = await this.db
-      .select({ syncAttempts: schema.inventoryScanEventsLocal.syncAttempts })
-      .from(schema.inventoryScanEventsLocal)
-      .where(eq(schema.inventoryScanEventsLocal.id, id))
-      .limit(1);
-    return rows[0]?.syncAttempts ?? 0;
   }
 }

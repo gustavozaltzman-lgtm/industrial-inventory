@@ -1,0 +1,1 @@
+ALTER TABLE "inventory_scan_events" ADD COLUMN "sequence_number" integer;

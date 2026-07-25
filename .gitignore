@@ -2,6 +2,7 @@ node_modules
 dist
 .turbo
 .next
+*.tsbuildinfo
 .expo
 expo-env.d.ts
 *.log
