@@ -50,9 +50,27 @@ tests unitarios sobre los casos de uso.
       (`pnpm turbo run build --filter=@indinv/backend...`) y el `dist/server.js` resultante
       probados localmente — el server respeta `PORT` inyectado y no depende de `.env` en
       runtime (dotenv es un no-op silencioso si no hay archivo).
-- [ ] Deploy real a Render — **no ejecutado**. Requiere conectar el repo a una cuenta de
-      Render (autorización explícita) y cargar `DATABASE_URL` como env var secreta ahí
-      (`sync: false` en el manifest, a propósito no la dejé hardcodeada).
+- [x] **Deploy en Render: https://indinv-backend.onrender.com** (plan `free`, region `ohio`
+      para quedar junto a Neon en `us-east-2`). Verificado en vivo contra la base real:
+      `/health` 200; batch nuevo -> `{inserted:2, duplicates:0}`; reenvío idéntico ->
+      `{inserted:0, duplicates:2}`; evento de otro tenant -> 400; sin `x-tenant-id` -> 400.
+      Lectura posterior confirma 2 eventos persistidos (no 4), probando la idempotencia.
+
+### Notas de deploy (para no repetir los tropiezos)
+
+- **Node 22, no 20.** `packageManager` está pineado a `pnpm@11.17.0`, y pnpm 11 requiere
+  Node >=22.13 porque usa `node:sqlite`. Con Node 20 el build muere con
+  `ERR_UNKNOWN_BUILTIN_MODULE`. Por eso `.node-version` dice `22` y `engines.node` es
+  `>=22.13` — no bajarlos.
+- **Free tier duerme el servicio** tras ~15 min sin tráfico; el primer request después
+  tarda 30-60s. Aceptable en desarrollo, no para operarios escaneando en planta. Migrar a
+  `plan: starter` (US$7/mes) o a Cloud Run cuando haya uso real.
+- **`DATABASE_URL` se carga a mano en el dashboard de Render** (`sync: false` en el
+  manifest, a propósito). Ojo de pegar el string completo con la contraseña real: pegar una
+  versión enmascarada da `28P01 password authentication failed`, que confunde porque el
+  usuario sí se identifica bien.
+- **Pendiente de higiene:** rotar la contraseña de Neon (circuló en texto plano durante la
+  configuración) y actualizarla en el `.env` local y en la env var de Render.
 
 ## Notas para la próxima sesión
 
