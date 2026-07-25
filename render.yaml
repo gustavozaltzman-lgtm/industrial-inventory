@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: indinv-backend
+    runtime: node
+    plan: starter
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm turbo run build --filter=@indinv/backend...
+    startCommand: node apps/backend/dist/server.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false

@@ -1,0 +1,70 @@
+# Estado actual — Sprint 1: Núcleo Arquitectónico y Backend Multi-Tenant
+
+Última actualización: 2026-07-25.
+
+## Objetivo del sprint
+Monorepo instalado, `@indinv/core-domain` con entidades/puertos/use-cases, migraciones
+Postgres con RLS + índices, pipeline de ingesta en el backend con logging estructurado y
+tests unitarios sobre los casos de uso.
+
+## Checklist
+
+- [x] Monorepo pnpm + Turborepo, namespace `@indinv/`.
+- [x] `docs/adr/ADR-001-monorepo-stack.md`.
+- [x] Entidades de dominio: `Tenant`, `User`, `Warehouse`, `Location` (con `depthCm`),
+      `Product` (con dimensiones), `InventoryScanEvent` (inmutable).
+- [x] Puertos: `InventoryEventRepository`, `VisionEngineAdapter`, `ScanIngestPayload` /
+      `ScanIngestNormalizer`.
+- [x] Migraciones Drizzle + RLS forzado + índices `(tenant_id, id)` y `(tenant_id, created_at)`
+      en Neon (verificado en vivo).
+- [x] Pipeline Fastify: routes → use-cases → repository, sin lógica de negocio en el controller.
+- [x] Pino con `tenantId`, `requestId`, `correlationId`, `traceId` en cada log de request
+      (verificado en vivo con `request completed`).
+- [x] Tests unitarios de dominio con Vitest (inmutabilidad, trazabilidad de ajustes,
+      transiciones de sync). 100% de cobertura (statements/branches/functions/lines) en
+      `src/use-cases` y `src/events`, con umbral de 80% forzado en `vitest.config.ts`.
+- [x] Tests de integración del backend (`app.inject()` con repositorio in-memory inyectado,
+      sin tocar Neon): validación de tenant obligatorio, creación de eventos, aislamiento
+      multi-tenant en listados, ajustes y su 404 cuando el evento original no existe.
+- [x] Tailwind CSS + shadcn/ui en `apps/web` (`table`, `badge`, `button`), verificado en
+      navegador contra datos reales de Neon.
+- [x] Expo Router (file-based routing) en `apps/mobile` — ver nota de versión abajo.
+- [x] Expo SecureStore: `SecureTokenStore` adapter listo (guarda/lee/borra token+tenantId en
+      keychain/keystore). Sin flujo de login todavía — no había un backend de auth que integrar.
+- [ ] Deploy a Vercel (web) — todo corre local por ahora; requiere autorización explícita del
+      usuario antes de tocar una cuenta/infra compartida.
+
+## Tarea #3 — Ingesta idempotente + Render (backend)
+
+- [x] `InventoryEventRepository.findExistingIds(tenantId, ids)` — implementado en
+      `PostgresInventoryEventRepository` (SQL `IN`) y `SqliteInventoryEventRepository` (mobile).
+- [x] `IngestScanUseCase` (core-domain): valida el lote con `scanIngestBatchSchema`, descarta
+      ids ya persistidos (`findExistingIds`) antes de `appendBatch`, lanza `TenantMismatchError`
+      si algún evento no pertenece al tenant del request. Tests con mocks `vi.fn()` (5 casos:
+      lote nuevo, dedup parcial, dedup total sin tocar el repo, tenant mismatch, payload inválido).
+- [x] Fastify Type Provider Zod (`fastify-type-provider-zod`) configurado en `buildApp()`.
+- [x] `POST /api/v1/scans/batch` (`apps/backend/src/routes/scans.ts`) — 201 con
+      `{ inserted, duplicates }`. Verificado en vivo contra Neon: primer envío inserta 2,
+      reenvío del mismo lote inserta 0/duplicates 2, evento de otro tenant devuelve 400.
+- [x] `render.yaml` + `.node-version` preparados en la raíz del repo. Build command
+      (`pnpm turbo run build --filter=@indinv/backend...`) y el `dist/server.js` resultante
+      probados localmente — el server respeta `PORT` inyectado y no depende de `.env` en
+      runtime (dotenv es un no-op silencioso si no hay archivo).
+- [ ] Deploy real a Render — **no ejecutado**. Requiere conectar el repo a una cuenta de
+      Render (autorización explícita) y cargar `DATABASE_URL` como env var secreta ahí
+      (`sync: false` en el manifest, a propósito no la dejé hardcodeada).
+
+## Notas para la próxima sesión
+
+- **Expo Router v3 → v4:** el prompt pedía "Expo Router v3", pero esa versión va atada a
+  Expo SDK 50. Con SDK 52 (ya elegido para cumplir "51+") el router correspondiente es v4.
+  Se instaló v4 (`expo-router: ~4.0.9`) por compatibilidad real; v3 con SDK 52 hubiera roto el
+  build. Si el pin a v3 es un requisito duro, hay que bajar todo el SDK a 50.
+- La tabla física de `Product` sigue llamándose `skus` en Postgres (se evitó el rename para no
+  arriesgar el prompt interactivo de `drizzle-kit generate` sobre una tabla ya migrada). El
+  nombre de dominio (`Product`) y el de la tabla física (`skus`) están intencionalmente
+  desacoplados — es un detalle de infraestructura, no una inconsistencia.
+- `ScanIngestNormalizer` es una interfaz definida pero sin implementación concreta todavía:
+  falta un adaptador real por dispositivo (Cognex/Zebra/AMR) cuando haya hardware para probar.
+- No hay flujo de login/auth real (JWT, endpoints de sesión) — `User` es solo la entidad de
+  dominio y `SecureTokenStore` el storage seguro; falta diseñar el caso de uso de autenticación.
