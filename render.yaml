@@ -2,7 +2,10 @@ services:
   - type: web
     name: indinv-backend
     runtime: node
-    plan: starter
+    plan: free
+    # Ohio queda en la misma region que la base Neon (us-east-2), evitando
+    # latencia cruzada en cada query. Oregon es el default de Render.
+    region: ohio
     buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm turbo run build --filter=@indinv/backend...
     startCommand: node apps/backend/dist/server.js
     healthCheckPath: /health
