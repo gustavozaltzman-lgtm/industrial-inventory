@@ -5,6 +5,7 @@
   },
   "build": {
     "development": {
+      "node": "22.13.0",
       "developmentClient": true,
       "distribution": "internal",
       "android": {
@@ -12,6 +13,7 @@
       }
     },
     "preview": {
+      "node": "22.13.0",
       "distribution": "internal",
       "android": {
         "buildType": "apk"
@@ -19,6 +21,7 @@
       "channel": "preview"
     },
     "production": {
+      "node": "22.13.0",
       "autoIncrement": true,
       "android": {
         "buildType": "app-bundle"
