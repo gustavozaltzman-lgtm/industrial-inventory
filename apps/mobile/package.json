@@ -13,6 +13,7 @@
     "dev": "expo start"
   },
   "dependencies": {
+    "@babel/runtime": "^7.26.0",
     "@indinv/core-domain": "workspace:*",
     "@react-native-community/netinfo": "11.4.1",
     "@shopify/flash-list": "1.7.1",

@@ -124,6 +124,9 @@ importers:
 
   apps/mobile:
     dependencies:
+      '@babel/runtime':
+        specifier: ^7.26.0
+        version: 7.29.7
       '@indinv/core-domain':
         specifier: workspace:*
         version: link:../../packages/core-domain
