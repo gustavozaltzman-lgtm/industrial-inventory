@@ -7,12 +7,25 @@
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "plugins": ["expo-router"],
+    "plugins": [
+      "expo-router"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.indinv.mobile"
     },
     "android": {
-      "package": "com.indinv.mobile"
-    }
+      "package": "com.indinv.mobile",
+      "versionCode": 1
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "8792d6c2-b8c5-468f-9c6f-08e86d7b63bb"
+      }
+    },
+    "owner": "gzal"
   }
 }
