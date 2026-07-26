@@ -1,4 +1,4 @@
-import type { CatalogResolver } from "../../engine/ports.js";
+import type { CatalogResolver } from "../../engine/ports";
 
 /**
  * Resolver de catálogo para desarrollo: mapea códigos contra tablas en

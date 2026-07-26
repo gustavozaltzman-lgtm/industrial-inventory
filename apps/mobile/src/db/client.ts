@@ -1,6 +1,6 @@
 import { openDatabaseSync } from "expo-sqlite";
 import { drizzle } from "drizzle-orm/expo-sqlite";
-import * as schema from "./schema.js";
+import * as schema from "./schema";
 
 /**
  * TODO producción: habilitar SQLCipher (esquema encriptado) para datos

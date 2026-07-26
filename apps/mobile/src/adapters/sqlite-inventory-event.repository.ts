@@ -5,7 +5,7 @@ import type {
   SyncStatus,
 } from "@indinv/core-domain";
 import type { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
-import * as schema from "../db/schema.js";
+import * as schema from "../db/schema";
 
 type LocalRow = typeof schema.inventoryScanEventsLocal.$inferSelect;
 export type LocalSyncStatus = LocalRow["syncStatus"];

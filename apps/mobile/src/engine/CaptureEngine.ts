@@ -5,16 +5,16 @@ import {
   type InventoryEventRepository,
   type InventoryScanEvent,
 } from "@indinv/core-domain";
-import type { BarcodeEngineAdapter, CameraFrame } from "../adapters/barcode/BarcodeEngineAdapter.js";
-import type { DeviceAdapter } from "../adapters/device/DeviceAdapter.js";
-import type { FeedbackAdapter } from "../adapters/feedback/FeedbackAdapter.js";
+import type { BarcodeEngineAdapter, CameraFrame } from "../adapters/barcode/BarcodeEngineAdapter";
+import type { DeviceAdapter } from "../adapters/device/DeviceAdapter";
+import type { FeedbackAdapter } from "../adapters/feedback/FeedbackAdapter";
 import {
   systemClock,
   type CaptureListener,
   type CatalogResolver,
   type Clock,
   type SequenceProvider,
-} from "./ports.js";
+} from "./ports";
 
 export class UnknownBarcodeError extends Error {
   constructor(barcode: string) {

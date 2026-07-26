@@ -5,11 +5,11 @@ import type {
   InventoryEventRepository,
   InventoryScanEvent,
 } from "@indinv/core-domain";
-import { CaptureEngine, UnknownBarcodeError, UnknownLocationError } from "../engine/CaptureEngine.js";
-import type { CatalogResolver, Clock, SequenceProvider } from "../engine/ports.js";
-import type { BarcodeEngineAdapter } from "../adapters/barcode/BarcodeEngineAdapter.js";
-import type { DeviceAdapter } from "../adapters/device/DeviceAdapter.js";
-import type { FeedbackAdapter } from "../adapters/feedback/FeedbackAdapter.js";
+import { CaptureEngine, UnknownBarcodeError, UnknownLocationError } from "../engine/CaptureEngine";
+import type { CatalogResolver, Clock, SequenceProvider } from "../engine/ports";
+import type { BarcodeEngineAdapter } from "../adapters/barcode/BarcodeEngineAdapter";
+import type { DeviceAdapter } from "../adapters/device/DeviceAdapter";
+import type { FeedbackAdapter } from "../adapters/feedback/FeedbackAdapter";
 
 beforeAll(() => {
   // createStockReadEvent usa globalThis.crypto para ser runtime-agnostic;

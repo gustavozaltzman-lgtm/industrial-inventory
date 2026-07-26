@@ -1,15 +1,15 @@
-import { db, initLocalDb } from "../db/client.js";
-import { ExpoDeviceAdapter } from "../adapters/device/ExpoDeviceAdapter.js";
-import { HapticFeedbackAdapter } from "../adapters/feedback/HapticFeedbackAdapter.js";
-import { MlKitBarcodeEngineAdapter } from "../adapters/barcode/MlKitBarcodeEngineAdapter.js";
-import { StaticCatalogResolver } from "../adapters/catalog/StaticCatalogResolver.js";
-import { SqliteInventoryEventRepository } from "../adapters/sqlite-inventory-event.repository.js";
-import { SqliteSequenceProvider } from "../adapters/sqlite-sequence.provider.js";
-import { SecureTokenStore } from "../adapters/secure-token-store.js";
-import { CaptureEngine } from "../engine/CaptureEngine.js";
-import { QueueManager } from "../services/sync/QueueManager.js";
-import { HttpSyncApiClient } from "../services/sync/HttpSyncApiClient.js";
-import { BackgroundSyncService } from "../services/sync/BackgroundSyncService.js";
+import { db, initLocalDb } from "../db/client";
+import { ExpoDeviceAdapter } from "../adapters/device/ExpoDeviceAdapter";
+import { HapticFeedbackAdapter } from "../adapters/feedback/HapticFeedbackAdapter";
+import { MlKitBarcodeEngineAdapter } from "../adapters/barcode/MlKitBarcodeEngineAdapter";
+import { StaticCatalogResolver } from "../adapters/catalog/StaticCatalogResolver";
+import { SqliteInventoryEventRepository } from "../adapters/sqlite-inventory-event.repository";
+import { SqliteSequenceProvider } from "../adapters/sqlite-sequence.provider";
+import { SecureTokenStore } from "../adapters/secure-token-store";
+import { CaptureEngine } from "../engine/CaptureEngine";
+import { QueueManager } from "../services/sync/QueueManager";
+import { HttpSyncApiClient } from "../services/sync/HttpSyncApiClient";
+import { BackgroundSyncService } from "../services/sync/BackgroundSyncService";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? "https://indinv-backend.onrender.com";
 

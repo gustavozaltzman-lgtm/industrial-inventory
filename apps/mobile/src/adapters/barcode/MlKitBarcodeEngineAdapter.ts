@@ -1,5 +1,5 @@
 import type { DecodedScanResult, VisionEngineAdapter } from "@indinv/core-domain";
-import type { BarcodeEngineAdapter, CameraFrame } from "./BarcodeEngineAdapter.js";
+import type { BarcodeEngineAdapter, CameraFrame } from "./BarcodeEngineAdapter";
 
 /**
  * Motor de lectura sobre Google ML Kit (cámara del smartphone).

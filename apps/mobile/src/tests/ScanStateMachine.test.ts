@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { initialScanState, scanReducer, type ScanState } from "../engine/ScanStateMachine.js";
+import { initialScanState, scanReducer, type ScanState } from "../engine/ScanStateMachine";
 
 function run(events: Parameters<typeof scanReducer>[1][], from: ScanState = initialScanState) {
   return events.reduce(scanReducer, from);

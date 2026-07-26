@@ -1,5 +1,5 @@
 import * as Haptics from "expo-haptics";
-import type { FeedbackAdapter } from "./FeedbackAdapter.js";
+import type { FeedbackAdapter } from "./FeedbackAdapter";
 
 /**
  * Implementación háptica. El beeper industrial (audio) se suma acá cuando se

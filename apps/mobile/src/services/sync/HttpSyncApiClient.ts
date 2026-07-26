@@ -1,6 +1,6 @@
 import type { InventoryScanEvent } from "@indinv/core-domain";
-import type { SyncApiClient } from "./BackgroundSyncService.js";
-import type { SecureTokenStore } from "../../adapters/secure-token-store.js";
+import type { SyncApiClient } from "./BackgroundSyncService";
+import type { SecureTokenStore } from "../../adapters/secure-token-store";
 
 export interface HttpSyncApiClientOptions {
   baseUrl: string;

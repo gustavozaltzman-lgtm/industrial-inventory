@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import type { ScanState, ScanStateName } from "../engine/ScanStateMachine.js";
+import type { ScanState, ScanStateName } from "../engine/ScanStateMachine";
 
 const STATE_LABEL: Record<ScanStateName, string> = {
   Idle: "Listo",

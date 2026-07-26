@@ -7,7 +7,7 @@ import type {
   DeviceAdapter,
   NetworkKind,
   NetworkStatus,
-} from "./DeviceAdapter.js";
+} from "./DeviceAdapter";
 
 const DEVICE_ID_KEY = "indinv.device.id";
 

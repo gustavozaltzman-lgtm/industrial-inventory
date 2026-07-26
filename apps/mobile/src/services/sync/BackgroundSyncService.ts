@@ -1,7 +1,7 @@
 import { AppState, type AppStateStatus } from "react-native";
 import type { InventoryScanEvent } from "@indinv/core-domain";
-import type { DeviceAdapter, NetworkStatus } from "../../adapters/device/DeviceAdapter.js";
-import type { QueueManager } from "./QueueManager.js";
+import type { DeviceAdapter, NetworkStatus } from "../../adapters/device/DeviceAdapter";
+import type { QueueManager } from "./QueueManager";
 
 export interface SyncApiClient {
   /** POST /api/v1/scans/batch — idempotente: reenviar el mismo lote no duplica. */

@@ -1,7 +1,7 @@
 import { eq, sql } from "drizzle-orm";
 import type { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
-import * as schema from "../db/schema.js";
-import type { SequenceProvider } from "../engine/ports.js";
+import * as schema from "../db/schema";
+import type { SequenceProvider } from "../engine/ports";
 
 /**
  * Contador monotónico por dispositivo persistido en SQLite. El UPSERT atómico

@@ -1,7 +1,7 @@
 import "../polyfills.js";
 import { useEffect } from "react";
 import { Stack } from "expo-router";
-import { getContainer } from "../composition/container.js";
+import { getContainer } from "../composition/container";
 
 export default function RootLayout() {
   useEffect(() => {

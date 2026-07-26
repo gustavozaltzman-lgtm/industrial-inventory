@@ -2,10 +2,10 @@ import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import type { InventoryScanEvent } from "@indinv/core-domain";
-import { getContainer } from "../../composition/container.js";
-import { initialScanState, scanReducer } from "../../engine/ScanStateMachine.js";
-import { ScanRow } from "../../views/ScanRow.js";
-import { StatusBanner } from "../../views/StatusBanner.js";
+import { getContainer } from "../../composition/container";
+import { initialScanState, scanReducer } from "../../engine/ScanStateMachine";
+import { ScanRow } from "../../views/ScanRow";
+import { StatusBanner } from "../../views/StatusBanner";
 
 export default function ScanScreen() {
   // El grafo de dependencias se arma una vez; recrearlo por render tiraría

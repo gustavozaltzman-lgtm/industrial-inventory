@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { computeBackoffMs, DEFAULT_BACKOFF } from "../services/sync/QueueManager.js";
+import { computeBackoffMs, DEFAULT_BACKOFF } from "../services/sync/QueueManager";
 
 describe("computeBackoffMs", () => {
   it("crece con cada intento", () => {

@@ -1,7 +1,7 @@
 import { and, asc, eq, inArray, isNull, lte, or, sql } from "drizzle-orm";
 import type { InventoryScanEvent } from "@indinv/core-domain";
 import type { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
-import * as schema from "../../db/schema.js";
+import * as schema from "../../db/schema";
 
 const events = schema.inventoryScanEventsLocal;
 
