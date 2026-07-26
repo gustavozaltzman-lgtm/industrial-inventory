@@ -3,14 +3,13 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
-    },
-    "@indinv/web#build": {
-      "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
       // Turborepo sanitiza el entorno para que los builds sean herméticos:
-      // toda variable que el build necesite tiene que declararse acá o no
-      // llega. Sin esto, Vercel avisa que INDINV_API_URL no estará disponible.
+      // una variable no declarada no llega al proceso aunque exista en la
+      // plataforma. Se declara en la tarea global porque Vercel la expone a
+      // todo el proyecto y, si solo la declara web, Turbo sigue avisando por
+      // core-domain. El costo es que un cambio de valor invalida la cache de
+      // core-domain, que rebuildea en ~2s.
       "env": ["INDINV_API_URL"]
     },
     "dev": {
