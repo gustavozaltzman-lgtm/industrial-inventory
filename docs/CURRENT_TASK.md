@@ -1,6 +1,6 @@
 # Estado actual — Sprint 1: Núcleo Arquitectónico y Backend Multi-Tenant
 
-Última actualización: 2026-07-25.
+Última actualización: 2026-07-26.
 
 ## Objetivo del sprint
 Monorepo instalado, `@indinv/core-domain` con entidades/puertos/use-cases, migraciones
@@ -123,6 +123,39 @@ tests unitarios sobre los casos de uso.
 - **`TelemetryHub` es en memoria**, particionado por tenant. Con más de una instancia de
   Render, un evento ingerido por la instancia A no llegaría a un panel conectado a la B.
   Documentado en el propio archivo; migrar a Redis pub/sub no cambia la interfaz pública.
+
+## Tarea #6 — Cliente de escritorio (@indinv/desktop, Tauri 2.0)
+
+- [x] Todos los archivos pedidos: `tauri.conf.json`, `capabilities/default.json`, `lib.rs`
+      (registro de plugins + bandeja del sistema), `commands/hardware.rs` (puerto serie
+      real vía el crate `serialport`, no un plugin comunitario sin verificar),
+      `commands/db.rs` (init/stats/vacuum de SQLite local), `tauriBridge.ts` (adaptador
+      Tauri↔navegador), `desktopSyncManager.ts`, `HardwareStatusWidget.tsx`,
+      `tauriBridge.test.ts`.
+- [x] **Verificado el lado TypeScript, de punta a punta**: typecheck limpio, 6/6 tests
+      con los mocks oficiales de `@tauri-apps/api/mocks`, y `next build` con
+      `output: "export"` genera el estático que Tauri va a servir (`Exporting (2/2)`).
+      Workspace completo (5 paquetes) sigue en 15/15 tareas de Turbo tras el agregado.
+- [ ] **El lado Rust NO se pudo compilar ni verificar.** No hay `cargo`/`rustc` en este
+      entorno de desarrollo. El código está escrito siguiendo la API real de Tauri v2
+      (revisada contra el código fuente instalado de `@tauri-apps/api`, no de memoria),
+      pero nunca pasó por `cargo check`. Tratarlo como *no verificado* hasta que alguien
+      con toolchain de Rust lo compile.
+- [ ] Íconos de la app (`.ico`, `.icns`, PNGs) no generados — son binarios, requieren
+      `pnpm tauri icon <logo.png>` con el CLI real. Documentado en
+      `src-tauri/icons/README.md`.
+- [ ] El Operations Center completo (KPIs, flota, conciliación de la Tarea #5) todavía no
+      se reutiliza dentro de `apps/desktop` — el shell actual (`src/app/page.tsx`) solo
+      monta `HardwareStatusWidget`. Portar los componentes de `apps/web` es directo (ya
+      no dependen del BFF salvo por `apiClient`, que en desktop se reemplaza por
+      `desktopSyncManager` + llamadas directas al backend).
+
+### Decisión de arquitectura: por qué desktop no tiene BFF
+
+Ver la sección nueva en `docs/ARCHITECTURE.md`. Resumen: `next export` no aloja servidor
+Node, así que el patrón de la Tarea #5 (route handlers, sesión server-side, proxy SSE) no
+es aplicable — no es una limitación, es cómo funciona el static export. `desktopSyncManager`
+habla directo con `POST /api/v1/scans/batch` del backend.
 
 ## Notas para la próxima sesión
 

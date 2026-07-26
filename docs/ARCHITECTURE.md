@@ -67,6 +67,34 @@ Los eventos se escriben primero en SQLite local (`inventory_scan_events_local`) 
 `syncStatus = 'pending_sync'`. `SyncManager` los sube al backend en lotes cuando hay
 conectividad, vía `POST /scan-events/batch`.
 
+## Operations Center (`apps/web`) — BFF, no llamadas directas al backend
+
+El navegador **nunca** envía `x-tenant-id`. Habla con route handlers de Next
+(`src/app/api/**`), que resuelven la identidad del lado servidor (`src/server/session.ts`)
+e inyectan el header al llamar a Render (`src/server/backendGateway.ts`). El stream de
+telemetría en vivo sigue el mismo patrón: `src/app/api/telemetry/stream/route.ts` proxea
+el SSE del backend — necesario porque `EventSource` del navegador no permite headers
+custom, así que sin el proxy la única alternativa sería mandar el tenant por query string.
+
+## Cliente de escritorio (`apps/desktop`) — por qué NO usa el patrón BFF
+
+Tauri sirve el frontend como Next.js con **static export** (`output: "export"`): son
+archivos HTML/JS estáticos empaquetados en el binario, sin servidor Node en el cliente.
+Ni route handlers, ni sesión server-side, ni el proxy SSE del BFF de `apps/web` existen
+en ese contexto — no es una limitación de la app, es cómo funciona `next export`.
+
+Por eso `desktopSyncManager.ts` habla **directo** con el mismo endpoint idempotente del
+backend (`POST /api/v1/scans/batch`, Tarea #3), mandando `x-tenant-id` explícito porque no
+hay sesión de navegador que lo resuelva. El acceso a hardware local (puertos COM/USB para
+lectores de mesa, balanzas e impresoras ZPL) y a SQLite de alta capacidad pasa por
+`src/services/tauriBridge.ts`, que adapta entre `invoke()` de Tauri y una API que degrada a
+no-ops fuera del runtime nativo (navegador normal durante desarrollo, o los tests).
+
+**Estado real:** el código fuente Rust y TypeScript está escrito y el lado TS
+(typecheck, vitest, `next build --output=export`) está verificado. El lado Rust
+**no se pudo compilar ni verificar** — no hay `cargo`/`rustc` en este entorno de
+desarrollo. Antes de considerar la Tarea #6 cerrada hace falta `cargo check` como mínimo.
+
 ## Stack
 
 Ver `docs/adr/ADR-001-monorepo-stack.md` para el detalle y la justificación de cada elección.

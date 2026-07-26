@@ -1,0 +1,45 @@
+[package]
+name = "indinv-desktop"
+version = "0.1.0"
+description = "IndInv Operations Center — cliente de escritorio offline-first"
+edition = "2021"
+rust-version = "1.75"
+
+[lib]
+name = "indinv_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon"] }
+tauri-plugin-sql = { version = "2", features = ["sqlite"] }
+tauri-plugin-notification = "2"
+tauri-plugin-upload = "2"
+tauri-plugin-opener = "2"
+
+# I/O de puerto serie real (lectores de mesa, balanzas, impresoras ZPL sobre
+# COM). Se prefiere este crate, maduro y ampliamente usado, por sobre un
+# plugin comunitario de Tauri cuya superficie de comandos no se puede
+# verificar sin compilar.
+serialport = "4"
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sqlx = { version = "0.8", features = ["runtime-tokio", "sqlite"] }
+tokio = { version = "1", features = ["full"] }
+thiserror = "2"
+dirs = "5"
+
+[features]
+custom-protocol = ["tauri/custom-protocol"]
+
+[profile.release]
+# Arranque <1.5s y <120MB en reposo: LTO agresivo y sin unwinding reducen
+# tanto el tamaño del binario como el tiempo de carga inicial.
+panic = "abort"
+codegen-units = 1
+lto = true
+strip = true
+opt-level = "s"
