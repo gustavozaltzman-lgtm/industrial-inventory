@@ -11,7 +11,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "dev": "expo start",
-    "eas-build-pre-install": "corepack enable && corepack prepare pnpm@11.17.0 --activate",
+    "eas-build-pre-install": "corepack enable && COREPACK_INTEGRITY_KEYS=0 corepack prepare pnpm@11.17.0 --activate",
     "eas-build-post-install": "cd ../.. && pnpm --filter @indinv/core-domain build"
   },
   "dependencies": {
