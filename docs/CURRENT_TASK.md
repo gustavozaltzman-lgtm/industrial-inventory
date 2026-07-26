@@ -31,8 +31,14 @@ tests unitarios sobre los casos de uso.
 - [x] Expo Router (file-based routing) en `apps/mobile` — ver nota de versión abajo.
 - [x] Expo SecureStore: `SecureTokenStore` adapter listo (guarda/lee/borra token+tenantId en
       keychain/keystore). Sin flujo de login todavía — no había un backend de auth que integrar.
-- [ ] Deploy a Vercel (web) — todo corre local por ahora; requiere autorización explícita del
-      usuario antes de tocar una cuenta/infra compartida.
+- [x] **Deploy en Vercel: https://industrial-inventory-web.vercel.app**
+      Root Directory `apps/web`, con `vercel.json` propio porque el build por defecto falla:
+      `apps/web` importa el `dist` compilado de `core-domain`, así que el buildCommand tiene
+      que construir el dominio primero (`--filter=@indinv/web...`).
+      Verificado en producción: carga en 0.83s con los 11 eventos reales de Neon, cero
+      errores de consola, Tailwind aplicado (max-w-4xl → 896px, badge ámbar en `pending_sync`)
+      y cadena completa Vercel → Render → Neon probada insertando un evento y viéndolo
+      aparecer en el dashboard.
 
 ## Tarea #3 — Ingesta idempotente + Render (backend)
 
