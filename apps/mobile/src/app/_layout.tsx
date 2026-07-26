@@ -1,4 +1,4 @@
-import "../polyfills.js";
+import "../polyfills";
 import { useEffect } from "react";
 import { Stack } from "expo-router";
 import { getContainer } from "../composition/container";
