@@ -10,7 +10,8 @@
     "build": "tsc -p tsconfig.json --noEmit",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "dev": "expo start"
+    "dev": "expo start",
+    "eas-build-post-install": "cd ../.. && pnpm --filter @indinv/core-domain build"
   },
   "dependencies": {
     "@babel/runtime": "^7.26.0",
