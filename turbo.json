@@ -19,6 +19,13 @@
     "typecheck": {
       "dependsOn": ["^build"]
     },
+    "@indinv/web#typecheck": {
+      // Next genera los tipos de rutas en .next/types DURANTE el build, y el
+      // tsconfig los incluye. Sin esta dependencia turbo puede correr el
+      // typecheck en paralelo al build y fallar con TS6053 (archivo no
+      // encontrado) por una simple carrera, no por un error real de tipos.
+      "dependsOn": ["^build", "@indinv/web#build"]
+    },
     "lint": {},
     "test": {
       "dependsOn": ["^build"]

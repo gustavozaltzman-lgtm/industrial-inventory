@@ -1,5 +1,7 @@
 export * from "./schemas/common.schema.js";
 export * from "./schemas/inventory-scan-event.schema.js";
+export * from "./schemas/telemetry.schema.js";
+export * from "./schemas/operations.schema.js";
 
 export * from "./entities/tenant.entity.js";
 export * from "./entities/warehouse.entity.js";

@@ -10,6 +10,8 @@ import type { InventoryEventRepository } from "@indinv/core-domain";
 import tenantContextPlugin from "./plugins/tenant-context.plugin.js";
 import { scanEventsRoutes } from "./routes/scan-events.routes.js";
 import { scansRoutes } from "./routes/scans.js";
+import { operationsRoutes } from "./routes/operations.routes.js";
+import { telemetryRoutes } from "./routes/telemetry.routes.js";
 
 export interface BuildAppOptions {
   /** Permite inyectar un repositorio in-memory en tests de integración. */
@@ -37,6 +39,8 @@ export function buildApp(options: BuildAppOptions = {}) {
     scoped.register(tenantContextPlugin);
     scoped.register(scanEventsRoutes, { repository: options.repository });
     scoped.register(scansRoutes, { repository: options.repository, prefix: "/api/v1" });
+    scoped.register(operationsRoutes, { repository: options.repository, prefix: "/api/v1" });
+    scoped.register(telemetryRoutes, { prefix: "/api/v1" });
   });
 
   return app;

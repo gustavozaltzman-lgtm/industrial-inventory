@@ -78,6 +78,52 @@ tests unitarios sobre los casos de uso.
 - **Pendiente de higiene:** rotar la contraseña de Neon (circuló en texto plano durante la
   configuración) y actualizarla en el `.env` local y en la env var de Render.
 
+## Tarea #5 — Operations Center (@indinv/web)
+
+- [x] **BFF / No Header Trust real**: el navegador nunca envía `x-tenant-id`. Habla con route
+      handlers de Next (`src/app/api/operations/*`, `src/app/api/telemetry/stream`), que del
+      lado servidor resuelven `getSession()` e inyectan el header al llamar a Render
+      (`src/server/backendGateway.ts`). Verificado por grep: cero `x-tenant-id` en
+      `components/`, `hooks/` o `services/`.
+- [x] `apiClient.ts` — único punto de `fetch` del lado cliente; componentes y hooks no
+      llaman a `fetch`/`axios` directo (verificado por grep).
+- [x] SSE real: `TelemetryHub` en el backend (fan-out en memoria por tenant) + endpoint
+      `GET /api/v1/events/stream` + proxy en Next (`api/telemetry/stream`, runtime nodejs
+      porque edge cortaría la conexión) + `InventoryEventsStream` con reconexión y backoff
+      + `useRealtimeTelemetry` que invalida TanStack Query (no escribe el cache a mano: el
+      servidor sigue siendo la fuente de verdad de los agregados).
+- [x] `StateBoundary` con los 4 estados (Loading/Error/Unauthorized/Empty), `aria-live`
+      distinto para error (assertive) vs. el resto (polite), sin reintentar en 401.
+- [x] `OperationsKpiGrid`, `DeviceFleetStatus`, `ReconciliationTable` (virtualizada con
+      `@tanstack/react-virtual`, probada con 250 filas simuladas).
+- [x] Layout de 4 módulos (`(operations)/{dashboard,inventory,devices,administration}`).
+- [x] Vitest + RTL + MSW: 8 tests (loading, datos reales, null≠0, grupo accesible,
+      unauthorized sin botón de retry, timeout con retry, aria-live assertive, empty).
+- [x] **Verificado end-to-end en vivo, no solo con mocks**: insertar un evento por el
+      backend real aparece en el dashboard sin recargar — KPI 3→4, feed muestra el evento,
+      flota actualiza secuencia, conciliación suma cantidad. Los 4 endpoints del BFF
+      probados contra Neon real.
+
+### Decisiones y limitaciones honestas
+
+- **No hay autenticación real todavía.** `getSession()` (`src/server/session.ts`) es un
+  puerto explícito: hoy lee `INDINV_DEV_TENANT_ID` de una env var del servidor. El punto
+  del diseño no es "ya hay JWT", es que el tenant se decide en el servidor y el cliente
+  no puede tocarlo — eso ya se cumple y no cambia cuando se agregue JWT real, porque solo
+  cambia el cuerpo de `getSession()`.
+- **Device fleet sin heartbeats reales.** No existe tabla de heartbeats en Neon, así que
+  `batteryLevel`, `isCharging` y `network` se devuelven `null`/`"unknown"` — la UI los
+  muestra como "sin dato", nunca inventa un valor. `health` y `lastSeenAt` sí son reales,
+  derivados de `capturedAt` de los eventos de escaneo.
+- **Conciliación sin stock teórico.** No existe tabla de stock teórico, así que
+  `theoreticalQuantity` y `variance` son `null`. `countedQuantity` sí es una suma real de
+  `inventory_scan_events`.
+- **`duplicateEventsRejected` es 0 siempre** — `IngestScanUseCase` no cuenta los que
+  descarta. Hace falta agregar el contador ahí; el schema del KPI ya lo contempla.
+- **`TelemetryHub` es en memoria**, particionado por tenant. Con más de una instancia de
+  Render, un evento ingerido por la instancia A no llegaría a un panel conectado a la B.
+  Documentado en el propio archivo; migrar a Redis pub/sub no cambia la interfaz pública.
+
 ## Notas para la próxima sesión
 
 - **Expo Router v3 → v4:** el prompt pedía "Expo Router v3", pero esa versión va atada a
