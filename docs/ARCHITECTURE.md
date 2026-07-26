@@ -90,10 +90,12 @@ lectores de mesa, balanzas e impresoras ZPL) y a SQLite de alta capacidad pasa p
 `src/services/tauriBridge.ts`, que adapta entre `invoke()` de Tauri y una API que degrada a
 no-ops fuera del runtime nativo (navegador normal durante desarrollo, o los tests).
 
-**Estado real:** el código fuente Rust y TypeScript está escrito y el lado TS
-(typecheck, vitest, `next build --output=export`) está verificado. El lado Rust
-**no se pudo compilar ni verificar** — no hay `cargo`/`rustc` en este entorno de
-desarrollo. Antes de considerar la Tarea #6 cerrada hace falta `cargo check` como mínimo.
+**Estado real:** verificado de punta a punta. `cargo check` y `cargo clippy` pasan sin
+warnings sobre todo el crate Rust (`lib.rs`, `commands/hardware.rs`, `commands/db.rs`,
+etc.), confirmando que compila y que las versiones de Tauri/sqlx/serialport fijadas en
+`Cargo.toml` son reales y compatibles. El lado TypeScript pasa typecheck, tests y
+`next build --output=export`. Lo único pendiente es empaquetar un instalador real
+(`tauri build`), que además necesita íconos de marca reales — hoy hay un placeholder.
 
 ## Stack
 

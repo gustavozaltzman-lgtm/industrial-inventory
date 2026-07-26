@@ -10,3 +10,8 @@ expo-env.d.ts
 .env.local
 .DS_Store
 coverage
+
+# Rust / Tauri
+target/
+apps/desktop/out
+apps/desktop/src-tauri/gen

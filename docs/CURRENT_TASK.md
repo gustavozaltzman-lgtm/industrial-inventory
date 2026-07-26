@@ -135,15 +135,19 @@ tests unitarios sobre los casos de uso.
 - [x] **Verificado el lado TypeScript, de punta a punta**: typecheck limpio, 6/6 tests
       con los mocks oficiales de `@tauri-apps/api/mocks`, y `next build` con
       `output: "export"` genera el estático que Tauri va a servir (`Exporting (2/2)`).
-      Workspace completo (5 paquetes) sigue en 15/15 tareas de Turbo tras el agregado.
-- [ ] **El lado Rust NO se pudo compilar ni verificar.** No hay `cargo`/`rustc` en este
-      entorno de desarrollo. El código está escrito siguiendo la API real de Tauri v2
-      (revisada contra el código fuente instalado de `@tauri-apps/api`, no de memoria),
-      pero nunca pasó por `cargo check`. Tratarlo como *no verificado* hasta que alguien
-      con toolchain de Rust lo compile.
-- [ ] Íconos de la app (`.ico`, `.icns`, PNGs) no generados — son binarios, requieren
-      `pnpm tauri icon <logo.png>` con el CLI real. Documentado en
-      `src-tauri/icons/README.md`.
+- [x] **Rust instalado y verificado.** Se instaló `rustup` + Visual Studio Build Tools
+      (workload C++) en este entorno. `cargo check` y `cargo clippy` pasan **sin un solo
+      warning** sobre `lib.rs`, `main.rs`, `error.rs`, `state.rs`, `commands/hardware.rs`
+      y `commands/db.rs` — todo el árbol de dependencias (tauri 2.11, sqlx 0.8,
+      serialport 4.9, los 4 plugins) resuelve y linkea correctamente, confirmando que
+      las versiones fijadas en `Cargo.toml` son reales y compatibles entre sí.
+      Workspace completo (5 paquetes JS + el crate Rust) verificado: 15/15 tareas de
+      Turbo, sin regresiones.
+- [x] Ícono placeholder (`icon.ico`, cuadrado sólido, no arte real) agregado para que
+      `cargo check`/`cargo build` no fallen por la falta del recurso de Windows —
+      documentado como placeholder en `src-tauri/icons/README.md`. Los demás binarios de
+      ícono (PNGs, `.icns`) siguen sin generar; requieren `pnpm tauri icon <logo.png>`
+      con un logo real.
 - [ ] El Operations Center completo (KPIs, flota, conciliación de la Tarea #5) todavía no
       se reutiliza dentro de `apps/desktop` — el shell actual (`src/app/page.tsx`) solo
       monta `HardwareStatusWidget`. Portar los componentes de `apps/web` es directo (ya
